@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
@@ -9,8 +9,35 @@ import { DucksView } from "@/components/views/ducks";
 import { TeamView } from "@/components/views/team";
 import { accents, type ProductId } from "@/components/content";
 
+const TABS: ProductId[] = ["kkebi", "ducks", "team"];
+
+function readTabFromUrl(): ProductId | null {
+  const t = new URLSearchParams(window.location.search).get("tab");
+  return TABS.includes(t as ProductId) ? (t as ProductId) : null;
+}
+
 export default function Home() {
   const [active, setActive] = useState<ProductId>("kkebi");
+
+  // Keep the active tab in the URL (?tab=) so views are shareable and back/forward works.
+  useEffect(() => {
+    const sync = () => {
+      const t = readTabFromUrl();
+      if (t) setActive(t);
+    };
+    sync();
+    window.addEventListener("popstate", sync);
+    return () => window.removeEventListener("popstate", sync);
+  }, []);
+
+  const select = (id: ProductId) => {
+    setActive(id);
+    const url = new URL(window.location.href);
+    url.searchParams.set("tab", id);
+    url.hash = "";
+    window.history.pushState({ tab: id }, "", url);
+  };
+
   const a = accents[active];
 
   return (
@@ -23,7 +50,7 @@ export default function Home() {
         } as React.CSSProperties
       }
     >
-      <Nav active={active} onSelect={setActive} />
+      <Nav active={active} onSelect={select} />
       <main>
         <motion.div
           key={active}
@@ -34,7 +61,7 @@ export default function Home() {
           {active === "kkebi" ? <KkebiView /> : active === "ducks" ? <DucksView /> : <TeamView />}
         </motion.div>
       </main>
-      <Footer onSelect={setActive} />
+      <Footer onSelect={select} />
     </div>
   );
 }

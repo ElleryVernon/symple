@@ -61,6 +61,14 @@ body {
   color: #fff;
 }
 
+/* Tailwind v4 removed the default button pointer — restore it for clickable elements */
+button:not(:disabled),
+[role="button"]:not(:disabled),
+label[for],
+summary {
+  cursor: pointer;
+}
+
 .display {
   letter-spacing: -0.04em;
   line-height: 1.06;
