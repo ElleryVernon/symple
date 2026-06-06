@@ -73,12 +73,12 @@ export function FeatureRow({
 
           {before && after ? (
             <div className="mt-2 flex flex-wrap items-center gap-3">
-              <span className="rounded-full bg-ink/[0.05] px-4 py-2 text-sm font-medium text-ink-faint line-through decoration-ink-faint/40">
+              <span className="whitespace-nowrap rounded-full bg-ink/[0.05] px-4 py-2 text-sm font-medium text-ink-faint line-through decoration-ink-faint/40">
                 {before}
               </span>
               <ArrowRight size={18} className="text-ink-faint" />
               <span
-                className="rounded-full px-4 py-2 text-sm font-bold"
+                className="whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold"
                 style={{ background: "var(--accent-soft)", color: "var(--accent-strong)" }}
               >
                 {after}
@@ -88,7 +88,7 @@ export function FeatureRow({
 
           {metric ? (
             <div
-              className="mt-1 inline-flex w-fit items-center gap-2 rounded-full px-4 py-2 text-sm font-bold"
+              className="mt-1 inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold"
               style={{ background: "var(--accent-soft)", color: "var(--accent-strong)" }}
             >
               {metric}
@@ -121,7 +121,7 @@ export function TabShowcase({
             >
               <div className="flex items-center gap-3">
                 <span
-                  className="flex h-6 items-center rounded-full px-2.5 text-xs font-bold text-white"
+                  className="flex h-6 shrink-0 items-center whitespace-nowrap rounded-full px-2.5 text-xs font-bold text-white"
                   style={{ background: on ? "var(--accent-strong)" : "var(--color-ink-faint)" }}
                 >
                   {it.tag}

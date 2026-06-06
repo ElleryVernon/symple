@@ -23,7 +23,7 @@ export function DucksView() {
           <div className="flex flex-col gap-6">
             <Reveal>
               <span
-                className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[0.8rem] font-semibold"
+                className="inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[0.8rem] font-semibold"
                 style={{ background: "var(--accent-soft)", color: "var(--accent-strong)" }}
               >
                 {d.hero.eyebrow}

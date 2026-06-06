@@ -25,7 +25,7 @@ export function KkebiView() {
           <div className="flex flex-col gap-6">
             <Reveal>
               <span
-                className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[0.8rem] font-semibold"
+                className="inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[0.8rem] font-semibold"
                 style={{ background: "var(--accent-soft)", color: "var(--accent-strong)" }}
               >
                 {k.hero.eyebrow}
@@ -77,7 +77,7 @@ export function KkebiView() {
               {k.hero.chips.map((c, i) => (
                 <span
                   key={c}
-                  className={`absolute rounded-full bg-white px-3.5 py-2 text-xs font-bold text-ink ${
+                  className={`absolute whitespace-nowrap rounded-full bg-white px-3.5 py-2 text-xs font-bold text-ink ${
                     ["left-5 top-6", "right-5 top-1/3", "bottom-7 left-8"][i]
                   }`}
                 >
@@ -250,7 +250,7 @@ export function KkebiView() {
             {k.audience.items.map((a, i) => (
               <Reveal key={a.tag} delay={i * 0.06} className="flex flex-col gap-4 rounded-3xl bg-surface p-8">
                 <span
-                  className="w-fit rounded-full px-3 py-1 text-sm font-bold"
+                  className="w-fit whitespace-nowrap rounded-full px-3 py-1 text-sm font-bold"
                   style={{ background: "var(--accent-soft)", color: "var(--accent-strong)" }}
                 >
                   {a.tag}
