@@ -1,26 +1,93 @@
 @import "tailwindcss";
 
+@theme {
+  /* Surfaces — warm off-white, flat (no borders, no shadows) */
+  --color-bg: #fafaf8;
+  --color-surface: #f4f3f0;
+  --color-surface-2: #ffffff;
+  --color-ink: #14181a;
+  --color-ink-soft: #5b6166;
+  --color-ink-faint: #9aa0a3;
+
+  /* SYMPLE brand — green */
+  --color-brand: #00bf7f;
+  --color-brand-strong: #00a86e;
+  --color-mint: #e9f9f1;
+
+  /* Dark sections */
+  --color-night: #0a0a0b;
+  --color-night-2: #16181a;
+  --color-night-3: #1f2123;
+
+  --font-sans:
+    "Wanted Sans Variable", "Wanted Sans", -apple-system, BlinkMacSystemFont,
+    system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-marquee-rev: marquee-rev 46s linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes marquee-rev {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+/* Per-product accent — overridden on each view root */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --accent: #00bf7f;
+  --accent-strong: #00a86e;
+  --accent-soft: #e9f9f1;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+.display {
+  letter-spacing: -0.04em;
+  line-height: 1.06;
+  word-break: keep-all;
+}
+.headline {
+  letter-spacing: -0.03em;
+  word-break: keep-all;
+}
+.balance {
+  text-wrap: balance;
+}
+.keepall {
+  word-break: keep-all;
+}
+
+/* Data numerals — sans, tabular so digits don't jiggle while counting up */
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  letter-spacing: -0.02em;
+}
+
+.mask-x {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+.pause-hover:hover * {
+  animation-play-state: paused;
 }
