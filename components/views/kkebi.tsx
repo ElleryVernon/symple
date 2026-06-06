@@ -151,7 +151,7 @@ export function KkebiView() {
               <p className="text-sm font-semibold tracking-tight" style={{ color: "var(--accent)" }}>
                 {k.problem.definition.eyebrow}
               </p>
-              <p className="display mx-auto mt-5 max-w-3xl text-3xl font-extrabold text-white md:text-[2.6rem]">
+              <p className="display balance mx-auto mt-5 max-w-3xl whitespace-pre-line text-3xl font-extrabold text-white md:text-[2.6rem]">
                 {k.problem.definition.a}
                 <AccentText>{k.problem.definition.accent}</AccentText>
                 {k.problem.definition.b}

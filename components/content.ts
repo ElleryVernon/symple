@@ -78,7 +78,7 @@ export const kkebi = {
     ],
     definition: {
       eyebrow: "문제 정의",
-      a: "문제는 스트레스 자체보다 ",
+      a: "문제는 스트레스 자체보다\n",
       accent: "너무 늦게 알아차린다는 점",
       b: "입니다.",
     },
