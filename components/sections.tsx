@@ -119,14 +119,14 @@ export function TabShowcase({
               className={`rounded-2xl p-5 text-left transition-all duration-300 ${on ? "bg-white" : "hover:bg-white/60"}`}
               style={on ? { background: "var(--accent-soft)" } : undefined}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
                 <span
                   className="flex h-6 shrink-0 items-center whitespace-nowrap rounded-full px-2.5 text-xs font-bold text-white"
                   style={{ background: on ? "var(--accent-strong)" : "var(--color-ink-faint)" }}
                 >
                   {it.tag}
                 </span>
-                <h4 className="text-lg font-bold text-ink">{it.title}</h4>
+                <h4 className="text-base font-bold text-ink min-[360px]:text-lg">{it.title}</h4>
               </div>
               <AnimatePresence initial={false}>
                 {on ? (
