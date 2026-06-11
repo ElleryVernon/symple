@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/* Streamdown(마크다운 렌더러)이 쓰는 Tailwind 유틸리티를 생성하도록 소스로 등록 */
+@source "../node_modules/streamdown/dist/*.js";
+
+/* Streamdown 이 참조하는 shadcn 토큰 → 우리 팔레트로 매핑(inline: 런타임 var 사용) */
+@theme inline {
+  --color-foreground: var(--color-ink);
+  --color-muted-foreground: var(--color-ink-soft);
+  --color-muted: var(--color-surface);
+  --color-border: rgba(20, 24, 26, 0.1);
+  --color-primary: var(--accent-strong);
+  --color-primary-foreground: #ffffff;
+}
+
 @theme {
   /* Surfaces — warm off-white, flat (no borders, no shadows) */
   --color-bg: #fafaf8;
@@ -98,4 +111,31 @@ summary {
 }
 .pause-hover:hover * {
   animation-play-state: paused;
+}
+
+/* Reasoning "thinking" label — gradient sweep across the text (ChatGPT/Claude style) */
+@keyframes text-shimmer {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+.shimmer-text {
+  background: linear-gradient(
+    110deg,
+    var(--color-ink-faint) 30%,
+    var(--color-ink) 50%,
+    var(--color-ink-faint) 70%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: text-shimmer 1.8s linear infinite;
+}
+
+/* Streamdown 마크다운 — 채팅 말풍선 밀도에 맞게 바깥 여백만 정리 */
+.counsel-md > :first-child {
+  margin-top: 0;
+}
+.counsel-md > :last-child {
+  margin-bottom: 0;
 }

@@ -28,7 +28,11 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css"
         />
       </head>
-      <body className="min-h-full">{children}</body>
+      {/* suppressHydrationWarning: 일부 브라우저 확장(예: ColorZilla의 cz-shortcut-listen)이
+          hydrate 전에 body 속성을 주입해 발생하는 경고만 무시 (한 단계 한정) */}
+      <body className="min-h-full" suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   );
 }

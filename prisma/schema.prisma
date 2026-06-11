@@ -1,0 +1,57 @@
+// KKEBI 상담 봇 — 대화 영속화 스키마
+// User(브라우저 단위 안정 id) → Session(상담 1회) → Message(턴)
+// supermemory containerTag 는 User.externalId 로 스코프되어 세션이 바뀌어도 기억이 유지된다.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id         String    @id @default(cuid())
+  /// 클라이언트(localStorage)에서 발급하는 안정적 식별자. supermemory containerTag 로도 사용.
+  externalId String    @unique
+  createdAt  DateTime  @default(now())
+  sessions   Session[]
+  messages   Message[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// 상담 페르소나: empathy | solution | aligned
+  persona   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  sessionId String
+  session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// user | assistant
+  role      String
+  content   String   @db.Text
+  /// 모델 reasoning(생각) — assistant 메시지에만
+  reasoning String?  @db.Text
+  /// 응답 생성 시간(ms) — "N초 동안 생각했어요" 표시용
+  thinkMs   Int?
+  /// 사용자가 중단/끼어들어 멈춘 응답인지
+  interrupted Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([sessionId, createdAt])
+  @@map("messages")
+}
