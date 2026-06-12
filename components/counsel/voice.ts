@@ -55,7 +55,8 @@ export class MicCapture {
     return Math.min(1, this.rms * 6);
   }
 
-  async start(onChunk: (pcm16: ArrayBuffer) => void): Promise<void> {
+  /** onChunk 는 PCM16 청크와 그 청크의 RMS 레벨(0~1 근사)을 함께 받는다 — barge-in 감지용 */
+  async start(onChunk: (pcm16: ArrayBuffer, level: number) => void): Promise<void> {
     this.stream = await navigator.mediaDevices.getUserMedia({
       audio: {
         channelCount: 1,
@@ -84,17 +85,19 @@ export class MicCapture {
       for (let i = 0; i < d.length; i++) sum += d[i] * d[i];
       const r = this.muted ? 0 : Math.sqrt(sum / d.length);
       this.rms += (r - this.rms) * 0.3;
-      if (this.muted) return;
-      this.buf.push(e.data);
+      // 음소거 중에도 무음 청크를 계속 흘린다 — STT 소켓 idle 종료 방지(킵얼라이브)
+      this.buf.push(this.muted ? new Float32Array(d.length) : e.data);
       this.buffered += e.data.length;
       while (this.buffered >= this.CHUNK) {
         const out = new Int16Array(this.CHUNK);
         let filled = 0;
+        let sumSq = 0;
         while (filled < this.CHUNK && this.buf.length) {
           const head = this.buf[0];
           const take = Math.min(head.length, this.CHUNK - filled);
           for (let i = 0; i < take; i++) {
             const s = Math.max(-1, Math.min(1, head[i]));
+            sumSq += s * s;
             out[filled + i] = s < 0 ? s * 0x8000 : s * 0x7fff;
           }
           filled += take;
@@ -102,10 +105,15 @@ export class MicCapture {
           else this.buf[0] = head.subarray(take);
         }
         this.buffered -= this.CHUNK;
-        onChunk(out.buffer);
+        onChunk(out.buffer, Math.sqrt(sumSq / this.CHUNK));
       }
     };
     src.connect(this.node);
+  }
+
+  /** 모바일 등에서 AudioContext 가 suspend 되면 수음이 조용히 멈춘다 — 워치독에서 복구 */
+  async resume() {
+    if (this.ctx?.state === "suspended") await this.ctx.resume().catch(() => {});
   }
 
   stop() {
@@ -141,7 +149,10 @@ export class SttSocket {
       cartesia_version: cfg.version,
       access_token: cfg.token,
       // 침묵 시 자동 finalize — 턴 감지의 1차 신호 (짧을수록 반응 빠름)
-      max_silence_duration_secs: "0.9",
+      max_silence_duration_secs: "0.6",
+      // 마이크단에서 이미 noiseSuppression/echoCancellation 으로 정제되므로 STT 게이트는
+      // 약하게만 — 너무 높으면(0.15) 조용히 흘리는 종결어미가 무음 처리돼 끝단어가 씹힌다.
+      min_volume: "0.06",
     });
     const ws = new WebSocket(`wss://api.cartesia.ai/stt/websocket?${q}`);
     this.ws = ws;
@@ -171,13 +182,20 @@ export class SttSocket {
     if (this.ws?.readyState === WebSocket.OPEN) this.ws.send(chunk);
   }
 
+  /** 소켓 생존 여부 — 죽어 있으면 sendAudio 가 조용히 버리므로 워치독이 확인한다 */
+  get isOpen(): boolean {
+    return this.ws?.readyState === WebSocket.OPEN;
+  }
+
   close() {
+    if (!this.ws) return;
+    this.ws.onclose = null; // 의도적 종료 — onClose(재연결) 콜백 억제
     try {
-      if (this.ws?.readyState === WebSocket.OPEN) this.ws.send("close");
+      if (this.ws.readyState === WebSocket.OPEN) this.ws.send("close");
     } catch {
       /* ignore */
     }
-    this.ws?.close();
+    this.ws.close();
     this.ws = null;
   }
 }
@@ -186,6 +204,7 @@ export class SttSocket {
 
 export class PcmPlayer {
   private ctx: AudioContext;
+  private gain: GainNode;
   private analyser: AnalyserNode;
   private meterBuf: Float32Array<ArrayBuffer>;
   private playhead = 0;
@@ -195,8 +214,10 @@ export class PcmPlayer {
 
   constructor(private sampleRate: number) {
     this.ctx = new AudioContext({ sampleRate });
+    this.gain = this.ctx.createGain(); // barge-in 페이드아웃용 마스터 게인
     this.analyser = this.ctx.createAnalyser();
     this.analyser.fftSize = 256;
+    this.gain.connect(this.analyser);
     this.analyser.connect(this.ctx.destination);
     this.meterBuf = new Float32Array(this.analyser.fftSize);
   }
@@ -211,6 +232,8 @@ export class PcmPlayer {
 
   /** TTS 청크(base64 pcm_s16le) 즉시 스케줄 */
   enqueueBase64(b64: string) {
+    // 자동재생 정책/백그라운드 전환으로 suspend 됐을 수 있다(특히 iOS) — 재생 전 복구
+    if (this.ctx.state === "suspended") void this.ctx.resume().catch(() => {});
     const bin = atob(b64);
     const bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
@@ -224,7 +247,7 @@ export class PcmPlayer {
     buf.getChannelData(0).set(f32);
     const src = this.ctx.createBufferSource();
     src.buffer = buf;
-    src.connect(this.analyser);
+    src.connect(this.gain);
 
     const now = this.ctx.currentTime;
     if (this.playhead < now + 0.04) this.playhead = now + 0.04; // 첫 청크 최소 리드
@@ -244,19 +267,43 @@ export class PcmPlayer {
     if (this.active.size === 0) this.onDrain?.();
   }
 
-  /** barge-in: 즉시 전부 중단 */
+  /** barge-in: 짧은 페이드아웃 후 전부 중단 — 하드컷 클릭음 없이 자연스럽게 끊는다 */
   stopAll() {
     this.ended = false;
-    for (const s of this.active) {
-      try {
-        s.onended = null;
-        s.stop();
-      } catch {
-        /* ignore */
-      }
-    }
+    const victims = [...this.active];
     this.active.clear();
     this.playhead = 0;
+    try {
+      const g = this.gain.gain;
+      const now = this.ctx.currentTime;
+      g.cancelScheduledValues(now);
+      g.setValueAtTime(g.value, now);
+      g.linearRampToValueAtTime(0, now + 0.07);
+    } catch {
+      /* ignore */
+    }
+    setTimeout(() => {
+      for (const s of victims) {
+        try {
+          s.onended = null;
+          s.stop();
+        } catch {
+          /* ignore */
+        }
+      }
+      this.restoreGain(); // 다음 턴을 위해 복원 (destroy 후라면 조용히 실패)
+    }, 90);
+  }
+
+  /** 페이드 스케줄을 걷어내고 풀 볼륨으로 — stopAll 후속/새 턴 시작 공용 */
+  private restoreGain() {
+    try {
+      const g = this.gain.gain;
+      g.cancelScheduledValues(this.ctx.currentTime);
+      g.setValueAtTime(1, this.ctx.currentTime);
+    } catch {
+      /* ignore */
+    }
   }
 
   get playing() {
@@ -265,6 +312,7 @@ export class PcmPlayer {
 
   reset() {
     this.ended = false;
+    this.restoreGain(); // 페이드 직후 새 턴이 시작돼도 항상 풀 볼륨에서 출발
   }
 
   async destroy() {
@@ -283,7 +331,8 @@ export class TtsSocket {
     cfg: VoiceConfig,
     onChunk: (b64: string, contextId: string) => void,
     onDone: (contextId: string) => void,
-    onError?: (msg: string) => void
+    onError?: (msg: string) => void,
+    onClose?: () => void
   ): Promise<void> {
     this.cfg = cfg;
     const q = new URLSearchParams({
@@ -297,6 +346,7 @@ export class TtsSocket {
       ws.onerror = () => reject(new Error("TTS 연결에 실패했어요."));
     });
     ws.onerror = null;
+    ws.onclose = () => onClose?.();
     ws.onmessage = (e) => {
       try {
         const m = JSON.parse(e.data as string) as {
@@ -314,9 +364,14 @@ export class TtsSocket {
     };
   }
 
-  /** 문장 단위 continuation — 같은 context_id 로 이어 보내고 마지막에 continue:false */
-  speak(contextId: string, transcript: string, isContinuation: boolean, isFinal: boolean) {
-    if (!this.cfg || this.ws?.readyState !== WebSocket.OPEN) return;
+  /**
+   * 문장 단위 continuation — 같은 context_id 로 이어 보낸다.
+   * isFinal=true 일 때만 continue:false (실제 텍스트와 함께)로 컨텍스트를 닫는다.
+   * 빈 transcript 로는 절대 닫지 않는다(서버가 컨텍스트 없음 에러를 낸다).
+   * @returns 실제로 전송됐는지 — 소켓이 죽어 조용히 버려지는 걸 호출부가 알 수 있게.
+   */
+  speak(contextId: string, transcript: string, isFinal: boolean): boolean {
+    if (!this.cfg || this.ws?.readyState !== WebSocket.OPEN || !transcript.trim()) return false;
     this.ws.send(
       JSON.stringify({
         model_id: this.cfg.tts.model,
@@ -326,15 +381,15 @@ export class TtsSocket {
         transcript,
         continue: !isFinal,
         // 문장이 이미 완성돼 들어오므로 버퍼 대기를 짧게 → 첫 오디오 빨라짐
-        max_buffer_delay_ms: 250,
+        max_buffer_delay_ms: 200,
         output_format: {
           container: "raw",
           encoding: "pcm_s16le",
           sample_rate: this.cfg.tts.sampleRate,
         },
-        ...(isContinuation ? {} : {}),
       })
     );
+    return true;
   }
 
   cancel(contextId: string) {
@@ -342,13 +397,37 @@ export class TtsSocket {
     this.ws.send(JSON.stringify({ context_id: contextId, cancel: true }));
   }
 
+  /** 소켓 생존 여부 — 죽어 있으면 speak 가 조용히 버리므로 워치독이 확인한다 */
+  get isOpen(): boolean {
+    return this.ws?.readyState === WebSocket.OPEN;
+  }
+
   close() {
-    this.ws?.close();
+    if (!this.ws) return;
+    this.ws.onclose = null; // 의도적 종료 — onClose(재연결) 콜백 억제
+    this.ws.close();
     this.ws = null;
   }
 }
 
 /* ─────────────────────────────────────────────── 문장 분할기 (LLM 델타 → TTS) */
+
+/**
+ * TTS 로 읽히기 전 정제 — 모델이 지시문/마크다운을 내보내도 음성엔 깨끗하게.
+ * 괄호 안 지시문, 마크다운 기호, 목록, 링크/이미지, 이모지를 제거한다.
+ */
+export function cleanForSpeech(text: string): string {
+  return text
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ") // 이미지
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1") // 링크 → 텍스트만
+    .replace(/\([^)]*\)|（[^）]*）/g, " ") // (지시문)
+    .replace(/\[[^\]]*\]|【[^】]*】/g, " ") // [지시문]
+    .replace(/[*_`#>~|]/g, "") // 마크다운 기호
+    .replace(/^\s*[-•·]\s+/gm, "") // 글머리 기호
+    .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}]/gu, "") // 이모지/픽토그램
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 const SENTENCE_END = /([.!?…。！？]+["'”’)\]]?\s|\n+)/;
 

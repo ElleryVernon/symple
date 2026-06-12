@@ -10,7 +10,9 @@
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "guidelines:validate": "node scripts/validate-guidelines.mjs",
+    "eval:counsel": "node --env-file=.env scripts/eval-counsel.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

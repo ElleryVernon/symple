@@ -1,0 +1,244 @@
+{
+ "chief_complaints": [
+  {
+   "code": "health",
+   "label_ko": "건강",
+   "label_en": "Health",
+   "emoji": "❤️‍🩹"
+  },
+  {
+   "code": "family",
+   "label_ko": "가족",
+   "label_en": "Family",
+   "emoji": "👨‍👩‍👧‍👦"
+  },
+  {
+   "code": "love_marriage",
+   "label_ko": "연애·결혼",
+   "label_en": "Love & Marriage",
+   "emoji": "💍"
+  },
+  {
+   "code": "work",
+   "label_ko": "직장",
+   "label_en": "Work",
+   "emoji": "💼"
+  },
+  {
+   "code": "money",
+   "label_ko": "돈",
+   "label_en": "Money",
+   "emoji": "💰"
+  },
+  {
+   "code": "friendship",
+   "label_ko": "우정",
+   "label_en": "Friendship",
+   "emoji": "🤝"
+  },
+  {
+   "code": "career_job",
+   "label_ko": "진로·취업",
+   "label_en": "Career & Job",
+   "emoji": "🚀"
+  },
+  {
+   "code": "pets",
+   "label_ko": "반려동물",
+   "label_en": "Pets",
+   "emoji": "🐾"
+  },
+  {
+   "code": "studies",
+   "label_ko": "학업",
+   "label_en": "Studies",
+   "emoji": "📚"
+  },
+  {
+   "code": "other",
+   "label_ko": "기타",
+   "label_en": "Other",
+   "emoji": "✨"
+  }
+ ],
+ "emotions": [
+  {
+   "code": "excited",
+   "label_ko": "신이 난",
+   "group": "positive"
+  },
+  {
+   "code": "happy",
+   "label_ko": "행복한",
+   "group": "positive"
+  },
+  {
+   "code": "glad",
+   "label_ko": "기쁜",
+   "group": "positive"
+  },
+  {
+   "code": "contented",
+   "label_ko": "만족스러운",
+   "group": "positive"
+  },
+  {
+   "code": "calm",
+   "label_ko": "차분한",
+   "group": "positive"
+  },
+  {
+   "code": "satisfied",
+   "label_ko": "충족감을 느끼는",
+   "group": "positive"
+  },
+  {
+   "code": "relaxed",
+   "label_ko": "편안한",
+   "group": "positive"
+  },
+  {
+   "code": "miserable",
+   "label_ko": "비참한",
+   "group": "negative"
+  },
+  {
+   "code": "sad",
+   "label_ko": "슬픈",
+   "group": "negative"
+  },
+  {
+   "code": "depressed",
+   "label_ko": "우울한",
+   "group": "negative"
+  },
+  {
+   "code": "bored",
+   "label_ko": "지루한",
+   "group": "negative"
+  },
+  {
+   "code": "discouraged",
+   "label_ko": "낙담한",
+   "group": "negative"
+  },
+  {
+   "code": "sleepy",
+   "label_ko": "졸린",
+   "group": "negative"
+  },
+  {
+   "code": "lonely",
+   "label_ko": "외로운",
+   "group": "negative"
+  },
+  {
+   "code": "regretful",
+   "label_ko": "후회되는",
+   "group": "negative"
+  },
+  {
+   "code": "guilty",
+   "label_ko": "죄책감이 드는",
+   "group": "negative"
+  },
+  {
+   "code": "tired",
+   "label_ko": "지친",
+   "group": "negative"
+  },
+  {
+   "code": "disheartened",
+   "label_ko": "의기소침한",
+   "group": "negative"
+  },
+  {
+   "code": "distressed",
+   "label_ko": "괴로운",
+   "group": "negative"
+  },
+  {
+   "code": "annoyed",
+   "label_ko": "짜증난",
+   "group": "negative"
+  },
+  {
+   "code": "afraid",
+   "label_ko": "두려운",
+   "group": "negative"
+  },
+  {
+   "code": "angry",
+   "label_ko": "화난",
+   "group": "negative"
+  },
+  {
+   "code": "nervous",
+   "label_ko": "긴장한",
+   "group": "negative"
+  },
+  {
+   "code": "surprised",
+   "label_ko": "놀란",
+   "group": "negative"
+  },
+  {
+   "code": "upset",
+   "label_ko": "속상한",
+   "group": "negative"
+  },
+  {
+   "code": "anxious",
+   "label_ko": "불안한",
+   "group": "negative"
+  },
+  {
+   "code": "confused",
+   "label_ko": "혼란스러운",
+   "group": "negative"
+  },
+  {
+   "code": "unpleasant",
+   "label_ko": "불쾌한",
+   "group": "negative"
+  }
+ ],
+ "stages": [
+  {
+   "code": "A",
+   "label_ko": "선행사건",
+   "label_en": "Antecedent",
+   "note": "무슨 일이 있었는지 맥락과 장면을 식별"
+  },
+  {
+   "code": "B",
+   "label_ko": "신념체계",
+   "label_en": "Belief",
+   "note": "그 장면에서 자동적으로 떠오른 믿음과 해석"
+  },
+  {
+   "code": "C",
+   "label_ko": "결과",
+   "label_en": "Consequence",
+   "note": "감정/행동/신체반응 결과"
+  },
+  {
+   "code": "D",
+   "label_ko": "논박",
+   "label_en": "Disputation",
+   "note": "비합리적 신념을 검토하고 재구성"
+  },
+  {
+   "code": "E",
+   "label_ko": "효과·행동합의",
+   "label_en": "Effect & Action Agreement",
+   "note": "행동활성화 미션, 주기, 강도, 방법 합의"
+  },
+  {
+   "code": "F",
+   "label_ko": "새로운 감정",
+   "label_en": "New Feeling",
+   "note": "행동합의 이후 기대되는 감정 변화"
+  }
+ ]
+}

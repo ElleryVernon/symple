@@ -6,7 +6,12 @@
 import type { PersonaId } from "./data";
 
 export interface StreamHandlers {
-  onMeta?: (meta: { sessionId: string; memoryCount: number; memoryEnabled: boolean }) => void;
+  onMeta?: (meta: {
+    sessionId: string;
+    memoryCount: number;
+    memoryEnabled: boolean;
+    memories?: string[];
+  }) => void;
   onReasoningDelta?: (delta: string) => void;
   onContentDelta?: (delta: string) => void;
   signal?: AbortSignal;
@@ -25,6 +30,8 @@ export interface StreamArgs {
   editMessageId?: string;
   /** 음성 모드 — 서버가 짧은 구어체 + 낮은 reasoning effort 로 응답 */
   voice?: boolean;
+  /** 텍스트 모드의 최근 화면 대화 — warm session에서 DB history 조회를 건너뛴다. */
+  history?: Array<{ id: string; role: "user" | "assistant"; content: string }>;
 }
 
 export interface StreamResult {
@@ -51,6 +58,7 @@ export async function streamReply(
       regenerate: args.regenerate,
       editMessageId: args.editMessageId,
       voice: args.voice,
+      history: args.history,
     }),
   });
 
@@ -88,6 +96,7 @@ export async function streamReply(
         sessionId?: string;
         memoryCount?: number;
         memoryEnabled?: boolean;
+        memories?: string[];
         message?: string;
       };
       try {
@@ -102,6 +111,7 @@ export async function streamReply(
             sessionId: evt.sessionId ?? "",
             memoryCount: evt.memoryCount ?? 0,
             memoryEnabled: !!evt.memoryEnabled,
+            memories: Array.isArray(evt.memories) ? evt.memories : undefined,
           });
           break;
         case "reasoning":

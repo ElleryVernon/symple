@@ -1,0 +1,322 @@
+[
+ {
+  "instrument": "PHQ-9",
+  "item_code": "PHQ9-01",
+  "item_summary": "흥미/즐거움 저하",
+  "response_scale": "0-3",
+  "scoring_rule": "합산 점수 사용",
+  "cut_point_or_flag": "10+ 주의, 15+ 고강도 관찰, safety item 별도 확인",
+  "follow_up_action": "고점수 시 risk/sleep/BA 경로 강화",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PHQ-9",
+  "item_code": "PHQ9-02",
+  "item_summary": "우울감/가라앉음",
+  "response_scale": "0-3",
+  "scoring_rule": "합산 점수 사용",
+  "cut_point_or_flag": "10+ 주의, 15+ 고강도 관찰, safety item 별도 확인",
+  "follow_up_action": "고점수 시 risk/sleep/BA 경로 강화",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PHQ-9",
+  "item_code": "PHQ9-03",
+  "item_summary": "수면 변화",
+  "response_scale": "0-3",
+  "scoring_rule": "합산 점수 사용",
+  "cut_point_or_flag": "10+ 주의, 15+ 고강도 관찰, safety item 별도 확인",
+  "follow_up_action": "고점수 시 risk/sleep/BA 경로 강화",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PHQ-9",
+  "item_code": "PHQ9-04",
+  "item_summary": "피로/에너지 저하",
+  "response_scale": "0-3",
+  "scoring_rule": "합산 점수 사용",
+  "cut_point_or_flag": "10+ 주의, 15+ 고강도 관찰, safety item 별도 확인",
+  "follow_up_action": "고점수 시 risk/sleep/BA 경로 강화",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PHQ-9",
+  "item_code": "PHQ9-05",
+  "item_summary": "식욕 변화",
+  "response_scale": "0-3",
+  "scoring_rule": "합산 점수 사용",
+  "cut_point_or_flag": "10+ 주의, 15+ 고강도 관찰, safety item 별도 확인",
+  "follow_up_action": "고점수 시 risk/sleep/BA 경로 강화",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PHQ-9",
+  "item_code": "PHQ9-06",
+  "item_summary": "자기비난",
+  "response_scale": "0-3",
+  "scoring_rule": "합산 점수 사용",
+  "cut_point_or_flag": "10+ 주의, 15+ 고강도 관찰, safety item 별도 확인",
+  "follow_up_action": "고점수 시 risk/sleep/BA 경로 강화",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PHQ-9",
+  "item_code": "PHQ9-07",
+  "item_summary": "집중 어려움",
+  "response_scale": "0-3",
+  "scoring_rule": "합산 점수 사용",
+  "cut_point_or_flag": "10+ 주의, 15+ 고강도 관찰, safety item 별도 확인",
+  "follow_up_action": "고점수 시 risk/sleep/BA 경로 강화",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PHQ-9",
+  "item_code": "PHQ9-08",
+  "item_summary": "느려짐/초조함",
+  "response_scale": "0-3",
+  "scoring_rule": "합산 점수 사용",
+  "cut_point_or_flag": "10+ 주의, 15+ 고강도 관찰, safety item 별도 확인",
+  "follow_up_action": "고점수 시 risk/sleep/BA 경로 강화",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PHQ-9",
+  "item_code": "PHQ9-09",
+  "item_summary": "안전 관련 생각",
+  "response_scale": "0-3",
+  "scoring_rule": "합산 점수 사용",
+  "cut_point_or_flag": "10+ 주의, 15+ 고강도 관찰, safety item 별도 확인",
+  "follow_up_action": "고점수 시 risk/sleep/BA 경로 강화",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PSS-10",
+  "item_code": "PSS10-01",
+  "item_summary": "예기치 못한 일로 압도감",
+  "response_scale": "0-4",
+  "scoring_rule": "역문항 반영 후 합산",
+  "cut_point_or_flag": "20+ stress high 참고",
+  "follow_up_action": "distress_regulate 또는 ba_plan 연결",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PSS-10",
+  "item_code": "PSS10-02",
+  "item_summary": "중요한 일 통제 어려움",
+  "response_scale": "0-4",
+  "scoring_rule": "역문항 반영 후 합산",
+  "cut_point_or_flag": "20+ stress high 참고",
+  "follow_up_action": "distress_regulate 또는 ba_plan 연결",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PSS-10",
+  "item_code": "PSS10-03",
+  "item_summary": "긴장/스트레스 경험",
+  "response_scale": "0-4",
+  "scoring_rule": "역문항 반영 후 합산",
+  "cut_point_or_flag": "20+ stress high 참고",
+  "follow_up_action": "distress_regulate 또는 ba_plan 연결",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PSS-10",
+  "item_code": "PSS10-04",
+  "item_summary": "문제 처리 자신감",
+  "response_scale": "0-4",
+  "scoring_rule": "역문항 반영 후 합산",
+  "cut_point_or_flag": "20+ stress high 참고",
+  "follow_up_action": "distress_regulate 또는 ba_plan 연결",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PSS-10",
+  "item_code": "PSS10-05",
+  "item_summary": "일이 뜻대로 되는 느낌",
+  "response_scale": "0-4",
+  "scoring_rule": "역문항 반영 후 합산",
+  "cut_point_or_flag": "20+ stress high 참고",
+  "follow_up_action": "distress_regulate 또는 ba_plan 연결",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PSS-10",
+  "item_code": "PSS10-06",
+  "item_summary": "감당 불가 느낌",
+  "response_scale": "0-4",
+  "scoring_rule": "역문항 반영 후 합산",
+  "cut_point_or_flag": "20+ stress high 참고",
+  "follow_up_action": "distress_regulate 또는 ba_plan 연결",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PSS-10",
+  "item_code": "PSS10-07",
+  "item_summary": "통제감 유지",
+  "response_scale": "0-4",
+  "scoring_rule": "역문항 반영 후 합산",
+  "cut_point_or_flag": "20+ stress high 참고",
+  "follow_up_action": "distress_regulate 또는 ba_plan 연결",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PSS-10",
+  "item_code": "PSS10-08",
+  "item_summary": "일의 누적 부담",
+  "response_scale": "0-4",
+  "scoring_rule": "역문항 반영 후 합산",
+  "cut_point_or_flag": "20+ stress high 참고",
+  "follow_up_action": "distress_regulate 또는 ba_plan 연결",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PSS-10",
+  "item_code": "PSS10-09",
+  "item_summary": "화나는 일에 대한 대처",
+  "response_scale": "0-4",
+  "scoring_rule": "역문항 반영 후 합산",
+  "cut_point_or_flag": "20+ stress high 참고",
+  "follow_up_action": "distress_regulate 또는 ba_plan 연결",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "PSS-10",
+  "item_code": "PSS10-10",
+  "item_summary": "어려움이 너무 많게 느껴짐",
+  "response_scale": "0-4",
+  "scoring_rule": "역문항 반영 후 합산",
+  "cut_point_or_flag": "20+ stress high 참고",
+  "follow_up_action": "distress_regulate 또는 ba_plan 연결",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "MBI",
+  "item_code": "MBI-EE",
+  "item_summary": "정서적 소진 관련 문항군",
+  "response_scale": "사용 척도에 따름",
+  "scoring_rule": "공식 매뉴얼 기준",
+  "cut_point_or_flag": "기관/라이선스 기준 사용",
+  "follow_up_action": "번아웃/직무 스트레스/회복 루틴 경로 강화",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "MBI",
+  "item_code": "MBI-DP",
+  "item_summary": "비인간화/거리두기 관련 문항군",
+  "response_scale": "사용 척도에 따름",
+  "scoring_rule": "공식 매뉴얼 기준",
+  "cut_point_or_flag": "기관/라이선스 기준 사용",
+  "follow_up_action": "번아웃/직무 스트레스/회복 루틴 경로 강화",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "MBI",
+  "item_code": "MBI-PA",
+  "item_summary": "개인 성취감 저하 관련 문항군",
+  "response_scale": "사용 척도에 따름",
+  "scoring_rule": "공식 매뉴얼 기준",
+  "cut_point_or_flag": "기관/라이선스 기준 사용",
+  "follow_up_action": "번아웃/직무 스트레스/회복 루틴 경로 강화",
+  "cadence": "baseline + month1 + month2 + month3"
+ },
+ {
+  "instrument": "EMA-short",
+  "item_code": "EMA-MOOD-AM",
+  "item_summary": "오전 기분 점수",
+  "response_scale": "1-5",
+  "scoring_rule": "직전 값 대비 변화 파악",
+  "cut_point_or_flag": "mood 2 이하이면 개입 강화",
+  "follow_up_action": "ema_checkin / distress_regulate / ba_plan",
+  "cadence": "2 times/day"
+ },
+ {
+  "instrument": "EMA-short",
+  "item_code": "EMA-DISTRESS-AM",
+  "item_summary": "오전 스트레스 정도",
+  "response_scale": "1-5",
+  "scoring_rule": "직전 값 대비 변화 파악",
+  "cut_point_or_flag": "mood 2 이하, distress 5 이상이면 개입 강화",
+  "follow_up_action": "ema_checkin / distress_regulate / ba_plan",
+  "cadence": "2 times/day"
+ },
+ {
+  "instrument": "EMA-short",
+  "item_code": "EMA-ENERGY-AM",
+  "item_summary": "오전 에너지 정도",
+  "response_scale": "1-5",
+  "scoring_rule": "직전 값 대비 변화 파악",
+  "cut_point_or_flag": "mood 2 이하, distress 5 이상이면 개입 강화",
+  "follow_up_action": "ema_checkin / distress_regulate / ba_plan",
+  "cadence": "2 times/day"
+ },
+ {
+  "instrument": "EMA-short",
+  "item_code": "EMA-MOOD-PM",
+  "item_summary": "저녁 기분 점수",
+  "response_scale": "1-5",
+  "scoring_rule": "직전 값 대비 변화 파악",
+  "cut_point_or_flag": "mood 2 이하, distress 5 이상이면 개입 강화",
+  "follow_up_action": "ema_checkin / distress_regulate / ba_plan",
+  "cadence": "2 times/day"
+ },
+ {
+  "instrument": "EMA-short",
+  "item_code": "EMA-DISTRESS-PM",
+  "item_summary": "저녁 힘든 정도",
+  "response_scale": "1-5",
+  "scoring_rule": "직전 값 대비 변화 파악",
+  "cut_point_or_flag": "mood 2 이하, distress 5 이상이면 개입 강화",
+  "follow_up_action": "ema_checkin / distress_regulate / ba_plan",
+  "cadence": "2 times/day"
+ },
+ {
+  "instrument": "Intake interview",
+  "item_code": "INTAKE-CHIEF",
+  "item_summary": "첫 진입시 주호소 자유기술",
+  "response_scale": "free text / guided slots",
+  "scoring_rule": "규칙 기반 formulation에 매핑",
+  "cut_point_or_flag": "반복 패턴/고위험/word-linked distress 여부 체크",
+  "follow_up_action": "schema_reframe/distress_regulate/intake_explore",
+  "cadence": "first app entry only"
+ },
+ {
+  "instrument": "Intake interview",
+  "item_code": "INTAKE-REPEAT",
+  "item_summary": "과거 반복 경험 여부",
+  "response_scale": "free text / guided slots",
+  "scoring_rule": "규칙 기반 formulation에 매핑",
+  "cut_point_or_flag": "반복 패턴/고위험/word-linked distress 여부 체크",
+  "follow_up_action": "schema_reframe/distress_regulate/intake_explore",
+  "cadence": "first app entry only"
+ },
+ {
+  "instrument": "Intake interview",
+  "item_code": "INTAKE-TRIGGER",
+  "item_summary": "특정 단어/주제 트리거 여부",
+  "response_scale": "free text / guided slots",
+  "scoring_rule": "규칙 기반 formulation에 매핑",
+  "cut_point_or_flag": "반복 패턴/고위험/word-linked distress 여부 체크",
+  "follow_up_action": "schema_reframe/distress_regulate/intake_explore",
+  "cadence": "first app entry only"
+ },
+ {
+  "instrument": "Intake interview",
+  "item_code": "INTAKE-SAFETY",
+  "item_summary": "현재 위험 여부 확인",
+  "response_scale": "free text / guided slots",
+  "scoring_rule": "규칙 기반 formulation에 매핑",
+  "cut_point_or_flag": "반복 패턴/고위험/word-linked distress 여부 체크",
+  "follow_up_action": "schema_reframe/distress_regulate/intake_explore",
+  "cadence": "first app entry only"
+ },
+ {
+  "instrument": "Intake interview",
+  "item_code": "INTAKE-HISTORY",
+  "item_summary": "과거 관계/직장/가족/금전 문제 패턴",
+  "response_scale": "free text / guided slots",
+  "scoring_rule": "규칙 기반 formulation에 매핑",
+  "cut_point_or_flag": "반복 패턴/고위험/word-linked distress 여부 체크",
+  "follow_up_action": "schema_reframe/distress_regulate/intake_explore",
+  "cadence": "first app entry only"
+ }
+]

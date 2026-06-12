@@ -27,6 +27,10 @@ model Session {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   /// 상담 페르소나: empathy | solution | aligned
   persona   String
+  /// 라우터가 분류한 깨비콜 시나리오 ID (예: KKC-WORK-W01-VAR01) — 미분류면 null
+  scenarioId String?
+  /// 현재 CBT 단계: A | B | C | D | E | F — 시나리오 분류 전이면 null
+  stage     String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   messages  Message[]
@@ -50,6 +54,8 @@ model Message {
   thinkMs   Int?
   /// 사용자가 중단/끼어들어 멈춘 응답인지
   interrupted Boolean @default(false)
+  /// 이 응답을 마친 시점의 CBT 단계(A~F) — regenerate/edit 시 세션 단계 롤백 기준
+  stage     String?
   createdAt DateTime @default(now())
 
   @@index([sessionId, createdAt])

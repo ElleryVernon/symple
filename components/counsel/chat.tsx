@@ -3,15 +3,17 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type KeyboardEvent,
   type ReactNode,
 } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowUp, ArrowDown, Square, ChevronDown, Mic, X } from "lucide-react";
+import { ArrowUp, ArrowDown, Square, ChevronDown, Mic, Trash2, X } from "lucide-react";
 import { Streamdown } from "streamdown";
 import { Logo } from "../ui";
+import { stripControlMarkers } from "@/lib/prompt";
 import { streamReply } from "./stream";
 import { VoiceMode } from "./voice-mode";
 import {
@@ -36,12 +38,14 @@ function Header({
   onToggleMemory,
   memoryCount,
   started,
+  onWipe,
 }: {
   onReset: () => void;
   memoryOpen: boolean;
   onToggleMemory: () => void;
   memoryCount: number;
   started: boolean;
+  onWipe: () => void;
 }) {
   return (
     <header className="relative z-30 shrink-0 bg-bg/70 backdrop-blur-xl">
@@ -57,6 +61,14 @@ function Header({
         </div>
 
         <div className="flex items-center gap-1.5">
+          <button
+            onClick={onWipe}
+            title="모든 대화·기억 삭제 (테스트용)"
+            aria-label="모든 대화·기억 삭제"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-ink/[0.04] text-ink-soft transition-colors hover:bg-red-500/10 hover:text-red-500"
+          >
+            <Trash2 size={15} />
+          </button>
           <button
             onClick={onToggleMemory}
             className={`flex h-9 items-center gap-1.5 rounded-full px-3.5 text-[0.8rem] font-semibold transition-colors ${
@@ -245,7 +257,7 @@ function PersonaSelect({ onPick }: { onPick: (id: PersonaId) => void }) {
         </div>
 
         <p className="mt-8 text-center text-[0.72rem] text-ink-faint">
-          OpenRouter · Gemini 3.5 Flash 기반 · 대화 내용은 다음 상담을 위해 안전하게 기억돼요.
+          OpenRouter 기반 · 대화 내용은 다음 상담을 위해 안전하게 기억돼요.
         </p>
       </div>
     </div>
@@ -391,9 +403,12 @@ function MessageBubble({
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(msg.content);
+  // 스트리밍 중 매 델타마다 전 메시지가 재렌더된다 — 마커 제거는 내용이 바뀔 때만.
+  // (조기 return 보다 위에 있어야 하는 훅이라 user 분기 앞에 둔다)
+  const displayContent = useMemo(() => stripControlMarkers(msg.content), [msg.content]);
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(msg.content);
+      await navigator.clipboard.writeText(stripControlMarkers(msg.content));
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -416,14 +431,16 @@ function MessageBubble({
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  save();
-                }
                 if (e.key === "Escape") {
                   setDraft(msg.content);
                   setEditing(false);
+                  return;
                 }
+                if (e.key !== "Enter" || e.shiftKey) return;
+                // IME 조합 중 Enter 는 글자 확정용 → 저장하지 않는다(마지막 글자 중복 방지)
+                if (e.nativeEvent.isComposing || e.keyCode === 229) return;
+                e.preventDefault();
+                save();
               }}
               className="max-h-40 w-full resize-none bg-transparent px-1.5 py-1 text-[0.95rem] leading-relaxed text-ink outline-none"
               rows={Math.min(6, draft.split("\n").length || 1)}
@@ -479,7 +496,8 @@ function MessageBubble({
     );
   }
 
-  const reasoningLive = !!msg.streaming && msg.content.length === 0;
+  // reasoning을 실제로 내보낸 모델에서만 "생각하는 중" UI를 표시한다.
+  const reasoningLive = !!msg.streaming && !!msg.reasoning && msg.content.length === 0;
 
   return (
     <motion.div
@@ -496,7 +514,7 @@ function MessageBubble({
 
         {msg.content ? (
           <Streamdown className="counsel-md text-[0.97rem] leading-[1.75] text-ink [&_a]:font-medium [&_a]:underline [&_a]:underline-offset-2">
-            {msg.content}
+            {displayContent}
           </Streamdown>
         ) : null}
 
@@ -587,10 +605,12 @@ function Composer({
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      submit();
-    }
+    if (e.key !== "Enter" || e.shiftKey) return;
+    // IME(한글·일본어 등) 조합 중 Enter 는 글자 확정용 → 전송하지 않는다.
+    // (조합 중 전송하면 마지막 글자가 한 번 더 입력되는 클래식 버그)
+    if (e.nativeEvent.isComposing || e.keyCode === 229) return;
+    e.preventDefault();
+    submit();
   };
 
   return (
@@ -685,7 +705,8 @@ export function CounselChat() {
     }
   }, []);
 
-  // 마운트: 안정 식별자 확보 → 기억 로드 → 마지막 세션 복원(새로고침해도 대화 이어가기)
+  // 마운트: 안정 식별자 확보 → 마지막 세션 복원.
+  // supermemory 목록은 부팅을 막지 않고 사용자가 기억 패널을 열 때만 가져온다.
   useEffect(() => {
     let id = localStorage.getItem("kkebi_uid");
     if (!id) {
@@ -697,7 +718,6 @@ export function CounselChat() {
     let cancelled = false;
     (async () => {
       setExternalId(id);
-      await refreshMemories();
       const storedSession = localStorage.getItem("kkebi_session");
       if (storedSession && id) {
         try {
@@ -774,6 +794,7 @@ export function CounselChat() {
         userMessageId?: string;
         regenerate?: boolean;
         editMessageId?: string;
+        history?: ChatMessage[];
       } = {}
     ) => {
       const controller = new AbortController();
@@ -799,9 +820,14 @@ export function CounselChat() {
             userMessageId: opts.userMessageId,
             regenerate: opts.regenerate,
             editMessageId: opts.editMessageId,
+            history: opts.history?.slice(-24).map(({ id, role, content }) => ({
+              id,
+              role,
+              content,
+            })),
           },
           {
-            onMeta: ({ sessionId, memoryEnabled: en }) => {
+            onMeta: ({ sessionId, memoryEnabled: en, memories: recalled }) => {
               if (sessionId) {
                 sessionIdRef.current = sessionId;
                 try {
@@ -811,13 +837,17 @@ export function CounselChat() {
                 }
               }
               setMemoryEnabled(en);
+              if (recalled?.length) setMemories(recalled);
             },
             onReasoningDelta: (d) =>
               patchMsg(msgId, (m) => ({ ...m, reasoning: (m.reasoning ?? "") + d })),
             onContentDelta: (d) => {
               if (!contentStarted) {
                 contentStarted = true;
-                patchMsg(msgId, (m) => ({ ...m, thinkMs: performance.now() - started }));
+                patchMsg(msgId, (m) => ({
+                  ...m,
+                  thinkMs: performance.now() - started,
+                }));
               }
               patchMsg(msgId, (m) => ({ ...m, content: m.content + d }));
             },
@@ -835,10 +865,13 @@ export function CounselChat() {
             );
           });
         } else {
-          patchMsg(msgId, (m) => ({ ...m, streaming: false }));
+          // 마커 등 제어 토큰이 상태에 남으면 이후 history 로 LLM 에 되돌아간다 — 종료 시 정리
+          patchMsg(msgId, (m) => ({
+            ...m,
+            streaming: false,
+            content: stripControlMarkers(m.content),
+          }));
         }
-        // 기억 패널 갱신(새로 저장된 기억 반영)
-        if (!result.error) void refreshMemories();
       } catch {
         // 중단(stop)·끼어들기(barge-in): 답변 있으면 '멈춤'으로 보존, 없으면 제거.
         setMessages((prev) => {
@@ -856,7 +889,7 @@ export function CounselChat() {
         }
       }
     },
-    [refreshMemories]
+    []
   );
 
   const pickPersona = (id: PersonaId) => {
@@ -874,10 +907,11 @@ export function CounselChat() {
     stick.current = true;
     const id = uid();
     setMessages((prev) => [...prev, { id, role: "user", content: text }]);
-    runAssistant(personaId, { userMessage: text, userMessageId: id });
+    runAssistant(personaId, { userMessage: text, userMessageId: id, history: messages });
   };
 
-  // 유저 메시지 수정 → 그 메시지 이후를 잘라내고 새 내용으로 재생성
+  // 유저 메시지 수정 → 그 메시지 이후를 잘라내고 새 내용으로 재생성.
+  // history 는 보내지 않는다 — 서버는 수정/재생성 경로에서 DB 를 신뢰 소스로 쓴다.
   const editMessage = (messageId: string, newText: string) => {
     if (!personaId) return;
     abortRef.current?.abort();
@@ -897,24 +931,22 @@ export function CounselChat() {
 
   const regenerate = () => {
     if (streaming || !personaId) return;
-    setMessages((prev) => {
-      const last = [...prev].reverse().find((m) => m.role === "assistant");
-      return last ? prev.filter((m) => m.id !== last.id) : prev;
-    });
+    const last = [...messages].reverse().find((m) => m.role === "assistant");
+    setMessages(last ? messages.filter((m) => m.id !== last.id) : messages);
     stick.current = true;
     runAssistant(personaId, { regenerate: true });
   };
 
   const stop = () => abortRef.current?.abort();
 
-  // 음성 모드 턴 완료 — 대화에 메시지 반영(서버에는 이미 저장됨)
+  // 음성 모드 턴 완료 — 대화에 메시지 반영(서버에는 이미 저장됨).
+  // assistant 가 null 이면 답변 시작 전에 닫힌 턴 — 사용자 발화만 남긴다.
   const onVoiceTurn = useCallback(
-    (user: ChatMessage, assistant: ChatMessage) => {
+    (user: ChatMessage, assistant: ChatMessage | null) => {
       stick.current = true;
-      setMessages((prev) => [...prev, user, assistant]);
-      void refreshMemories();
+      setMessages((prev) => [...prev, user, ...(assistant ? [assistant] : [])]);
     },
-    [refreshMemories]
+    []
   );
 
   const reset = () => {
@@ -928,7 +960,24 @@ export function CounselChat() {
     stick.current = true;
     sessionIdRef.current = null;
     localStorage.removeItem("kkebi_session");
-    void refreshMemories();
+  };
+
+  // 전체 초기화(테스트용) — 서버의 모든 세션·기억을 지우고 식별자까지 새로 발급한다.
+  // 서버 삭제가 일부 실패해도 uid 를 회전하므로 사용자 입장에선 항상 깨끗하게 시작된다.
+  const wipeAll = async () => {
+    if (!confirm("모든 대화 세션과 기억을 삭제할까요? 되돌릴 수 없어요.")) return;
+    abortRef.current?.abort();
+    try {
+      await fetch(
+        `/api/counsel/session?externalId=${encodeURIComponent(externalIdRef.current)}`,
+        { method: "DELETE" }
+      );
+    } catch {
+      /* 서버 삭제 실패 — 아래 uid 회전으로 체감상 초기화는 보장된다 */
+    }
+    localStorage.removeItem("kkebi_session");
+    localStorage.removeItem("kkebi_uid");
+    location.reload();
   };
 
   const persona = personaId ? personaById(personaId) : null;
@@ -939,9 +988,15 @@ export function CounselChat() {
       <Header
         onReset={reset}
         memoryOpen={memoryOpen}
-        onToggleMemory={() => setMemoryOpen((v) => !v)}
+        onToggleMemory={() => {
+          setMemoryOpen((open) => {
+            if (!open) void refreshMemories();
+            return !open;
+          });
+        }}
         memoryCount={memories.length}
         started={!!persona}
+        onWipe={wipeAll}
       />
       <MemoryPanel
         open={memoryOpen}
